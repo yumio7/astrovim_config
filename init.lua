@@ -136,6 +136,14 @@ default_theme = {
     servers = {
       -- "pyright"
     },
+    skip_setup = { "clangd" },
+    ["server-settings"] = {
+      clangd = {
+        capabilities = {
+          offsetEncoding = "utf-8",
+        },
+      },
+    },
     formatting = {
       -- control auto formatting on save
       format_on_save = {
@@ -283,6 +291,18 @@ default_theme = {
       --     require("lsp_signature").setup()
       --   end,
       -- },
+      {
+        "p00f/clangd_extensions.nvim",
+        after = "mason-lspconfig.nvim", -- make sure to load after mason-lspconfig
+        config = function()
+          require("clangd_extensions").setup {
+            server = astronvim.lsp.server_settings "clangd",
+          }
+        end,
+      },
+    },
+    ["mason-lspconfig"] = {
+      ensure_installed = { "clangd" },
     },
     -- All other entries override the require("<key>").setup({...}) call for default plugins
     ["null-ls"] = function(config) -- overrides `require("null-ls").setup(config)`
