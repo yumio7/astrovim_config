@@ -132,10 +132,6 @@ default_theme = {
 
   -- Extend LSP configuration
   lsp = {
-    -- enable servers that you already have installed without mason
-    servers = {
-      -- "pyright"
-    },
     skip_setup = { "clangd" },
     ["server-settings"] = {
       clangd = {
@@ -177,22 +173,6 @@ default_theme = {
     -- server_registration = function(server, opts)
     --   require("lspconfig")[server].setup(opts)
     -- end,
-
-    -- Add overrides for LSP server settings, the keys are the name of the server
-    ["server-settings"] = {
-      -- example for addings schemas to yamlls
-      -- yamlls = { -- override table for require("lspconfig").yamlls.setup({...})
-      --   settings = {
-      --     yaml = {
-      --       schemas = {
-      --         ["http://json.schemastore.org/github-workflow"] = ".github/workflows/*.{yml,yaml}",
-      --         ["http://json.schemastore.org/github-action"] = ".github/action.{yml,yaml}",
-      --         ["http://json.schemastore.org/ansible-stable-2.9"] = "roles/tasks/*.{yml,yaml}",
-      --       },
-      --     },
-      --   },
-      -- },
-    },
   },
 
   -- Mapping data with "desc" stored directly by vim.keymap.set().
@@ -231,6 +211,14 @@ default_theme = {
   -- Configure plugins
   plugins = {
     init = {
+      { "p00f/clangd_extensions.nvim",
+        after = "mason-lspconfig.nvim", -- make sure to load after mason-lspconfig
+        config = function()
+          require("clangd_extensions").setup {
+            server = astronvim.lsp.server_settings "clangd",
+          }
+        end,
+      },
       { "folke/tokyonight.nvim",
         config = function()
           require("tokyonight").setup({
@@ -270,40 +258,11 @@ default_theme = {
           })
         end,
       },
-      -- You can disable default plugins as follows:
-      -- ["goolord/alpha-nvim"] = { disable = true },
-
-      -- You can also add new plugins here as well:
-      -- Add plugins, the packer syntax without the "use"
-      -- { "andweeb/presence.nvim" },
-      -- {
-      --   "ray-x/lsp_signature.nvim",
-      --   event = "BufRead",
-      --   config = function()
-      --     require("lsp_signature").setup()
-      --   end,
-      -- },
-
-      -- We also support a key value style plugin definition similar to NvChad:
-      -- ["ray-x/lsp_signature.nvim"] = {
-      --   event = "BufRead",
-      --   config = function()
-      --     require("lsp_signature").setup()
-      --   end,
-      -- },
-      {
-        "p00f/clangd_extensions.nvim",
-        after = "mason-lspconfig.nvim", -- make sure to load after mason-lspconfig
-        config = function()
-          require("clangd_extensions").setup {
-            server = astronvim.lsp.server_settings "clangd",
-          }
-        end,
-      },
     },
     ["mason-lspconfig"] = {
       ensure_installed = { "clangd" },
     },
+
     -- All other entries override the require("<key>").setup({...}) call for default plugins
     ["null-ls"] = function(config) -- overrides `require("null-ls").setup(config)`
       -- config variable is the default configuration table for the setup function call
@@ -321,10 +280,6 @@ default_theme = {
     end,
     treesitter = { -- overrides `require("treesitter").setup(...)`
       -- ensure_installed = { "lua" },
-    },
-    -- use mason-lspconfig to configure LSP installations
-    ["mason-lspconfig"] = { -- overrides `require("mason-lspconfig").setup(...)`
-      -- ensure_installed = { "sumneko_lua" },
     },
     -- use mason-null-ls to configure Formatters/Linter installation for null-ls sources
     ["mason-null-ls"] = { -- overrides `require("mason-null-ls").setup(...)`
